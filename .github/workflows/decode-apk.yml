@@ -1,0 +1,34 @@
+name: Publish Bulent TV 0.2 APK
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'BulentTV-0.2.apk.b64'
+      - '.github/workflows/decode-apk.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Decode APK
+        run: base64 --decode BulentTV-0.2.apk.b64 > BulentTV-0.2.apk
+
+      - name: Verify APK exists
+        run: test -s BulentTV-0.2.apk
+
+      - name: Commit APK
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add BulentTV-0.2.apk
+          git diff --cached --quiet || git commit -m "Publish Bulent TV 0.2 APK"
+          git push
