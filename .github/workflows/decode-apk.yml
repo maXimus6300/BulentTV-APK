@@ -1,11 +1,10 @@
-name: Publish Bulent TV 0.2 APK
+name: Publish Bulent TV latest APK
 
 on:
   push:
     branches:
       - main
     paths:
-      - 'BulentTV-0.2.apk.b64'
       - '.github/workflows/decode-apk.yml'
   workflow_dispatch:
 
@@ -19,16 +18,25 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Decode APK
-        run: base64 --decode BulentTV-0.2.apk.b64 > BulentTV-0.2.apk
+      - name: Download Bulent TV 0.3 build artifact
+        run: |
+          curl -L --fail --retry 3 'https://sdmntprpolandcentral.oaiusercontent.com/files/00000000-9240-820a-9523-1673c80a36fe/raw?se=2026-10-30T00%3A33%3A19Z&sp=r&sv=2026-02-06&sr=b&scid=11457915-fda6-533a-a343-4e3772f4565a&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-29T23%3A15%3A41Z&ske=2026-10-30T23%3A15%3A41Z&sks=b&skv=2026-02-06&sig=hqK0TmMtB5LKqP2OVyZBY9%2F2gYIhHBKD77Piu9bipwk%3D' -o /tmp/BulentTV-0.3-alpha.zip
+          rm -rf /tmp/btv03
+          mkdir -p /tmp/btv03
+          unzip -q /tmp/BulentTV-0.3-alpha.zip -d /tmp/btv03
+          test -s /tmp/btv03/app-debug.apk
+          cp /tmp/btv03/app-debug.apk BulentTV-0.3.apk
+          cp /tmp/btv03/app-debug.apk BulentTV-latest.apk
 
-      - name: Verify APK exists
-        run: test -s BulentTV-0.2.apk
+      - name: Verify APK size
+        run: |
+          test $(stat -c%s BulentTV-0.3.apk) -gt 39000
+          test $(stat -c%s BulentTV-latest.apk) -gt 39000
 
-      - name: Commit APK
+      - name: Commit APKs
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add BulentTV-0.2.apk
-          git diff --cached --quiet || git commit -m "Publish Bulent TV 0.2 APK"
+          git add BulentTV-0.3.apk BulentTV-latest.apk
+          git diff --cached --quiet || git commit -m "Publish Bulent TV 0.3 APK"
           git push
