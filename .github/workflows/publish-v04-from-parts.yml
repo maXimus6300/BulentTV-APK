@@ -18,11 +18,72 @@ jobs:
       - name: Checkout download repository
         uses: actions/checkout@v4
 
+      - name: Diagnose staged v0.4 parts
+        run: |
+          set -u
+          {
+            echo "Bulent TV v0.4 staged-parts diagnostics"
+            date -u
+            echo
+            for f in \
+              .publish/v04safe/p00.b64 \
+              .publish/v04safe/p01.b64 \
+              .publish/v04safe/prefix2.b64 \
+              .publish/v04new/p01.b64 \
+              .publish/v04new/p02.b64 \
+              .publish/v04new/p03.b64 \
+              .publish/v04new/p04.b64 \
+              .publish/v04safe/suffix0.b64 \
+              .publish/v04safe/p13.b64 \
+              .publish/v04safe/p14.b64 \
+              .publish/v04safe/p15.b64 \
+              .publish/v04safe/p16.b64 \
+              .publish/v04safe/p17.b64 \
+              .publish/v04safe/p18.b64 \
+              .publish/v04safe/p19.b64 \
+              .publish/v04safe/p20.b64 \
+              .publish/v04safe/p21.b64; do
+                printf '%s | bytes=' "$f"
+                wc -c < "$f" | tr -d '\n'
+                printf ' | sha1='
+                sha1sum "$f" | awk '{print $1}'
+            done
+          } > v04-diagnostics.txt
+          cat v04-diagnostics.txt
+
+      - name: Commit diagnostics
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add v04-diagnostics.txt
+          git diff --cached --quiet || git commit -m 'Record v0.4 publish diagnostics'
+          git push
+
+      - name: Verify every staged part
+        run: |
+          set -euo pipefail
+          echo 'cc12928156130c08cc74021bef89d5c7f3511fcd  .publish/v04safe/p00.b64' | sha1sum -c -
+          echo '3f8058bd060315d78ff18b0db60140ad14e91107  .publish/v04safe/p01.b64' | sha1sum -c -
+          echo '88348ab7af0ce255db81ad3cb63498e87a2c135f  .publish/v04safe/prefix2.b64' | sha1sum -c -
+          echo 'ba80a4c9b7dfd25d2540eea6a8169099031c55a9  .publish/v04new/p01.b64' | sha1sum -c -
+          echo '034ccd89e5f2951ac6c3993e9c85c4a1f80b2acb  .publish/v04new/p02.b64' | sha1sum -c -
+          echo 'dd3ee5295ab27b08ccc0c559fe9fef46e4554c23  .publish/v04new/p03.b64' | sha1sum -c -
+          echo '9691545ea62c401ff6eb342a4e3b2e3b0d91fa78  .publish/v04new/p04.b64' | sha1sum -c -
+          echo '67f5569f6680a34d05817ffb8ec84c89d8f89405  .publish/v04safe/suffix0.b64' | sha1sum -c -
+          echo 'a0d56f84dcf54678a3074da69d13e4547fdff923  .publish/v04safe/p13.b64' | sha1sum -c -
+          echo '06af8cd0da3ef40865825eef464b34b98d2bb4e9  .publish/v04safe/p14.b64' | sha1sum -c -
+          echo 'a2091fed8575393e5227d6f4ecea3d79848436b1  .publish/v04safe/p15.b64' | sha1sum -c -
+          echo '5acd8f68b3c803f55411610254af32c2800a9c00  .publish/v04safe/p16.b64' | sha1sum -c -
+          echo '594cb620ccaa3185808d51d23ec5a7a6d8a20be6  .publish/v04safe/p17.b64' | sha1sum -c -
+          echo 'd5c0a6605858f679bcc07283f55dd62757370207  .publish/v04safe/p18.b64' | sha1sum -c -
+          echo '370bc2d3184ca6e67270d82546ab14a813600542  .publish/v04safe/p19.b64' | sha1sum -c -
+          echo '2e2ab5265357d248c0e35c7825a34308dfab02a5  .publish/v04safe/p20.b64' | sha1sum -c -
+          echo 'f1d458e341414d2952f73607347fa88758002e48  .publish/v04safe/p21.b64' | sha1sum -c -
+
       - name: Rebuild and verify v0.4 APK
         run: |
           set -euo pipefail
-
-          # Compose the exact verified 87,580-character Base64 stream.
           cat \
             .publish/v04safe/p00.b64 \
             .publish/v04safe/p01.b64 \
@@ -42,7 +103,6 @@ jobs:
             .publish/v04safe/p20.b64 \
             .publish/v04safe/p21.b64 \
             > /tmp/BulentTV-v0.4.apk.b64
-
           test "$(wc -c < /tmp/BulentTV-v0.4.apk.b64)" -eq 87580
           base64 --decode /tmp/BulentTV-v0.4.apk.b64 > BulentTV-0.4.apk
           test "$(stat -c%s BulentTV-0.4.apk)" -eq 65685
@@ -53,11 +113,7 @@ jobs:
       - name: Commit verified APKs
         run: |
           set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add BulentTV-0.4.apk BulentTV-latest.apk
           git diff --cached --quiet && exit 0
           git commit -m 'Publish verified Bulent TV v0.4'
           git push
-
-# trigger: all safe v0.4 parts staged
