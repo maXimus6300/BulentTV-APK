@@ -18,28 +18,9 @@ jobs:
       - name: Checkout download repository
         uses: actions/checkout@v4
 
-      - name: Verify repaired staged pieces
+      - name: Verify staged pieces
         run: |
           set -euo pipefail
-          for f in \
-            .publish/v04/part00.b64 \
-            .publish/v04/part01.b64 \
-            .publish/v04/fix01b.b64 \
-            .publish/v04/fix02a.b64 \
-            .publish/v04/fix02b.b64 \
-            .publish/v04/part03.b64 \
-            .publish/v04/fix04a.b64 \
-            .publish/v04/fix04b.b64 \
-            .publish/v04/fix05a.b64 \
-            .publish/v04/fix05b.b64 \
-            .publish/v04/part06.b64 \
-            .publish/v04/fix07a.b64 \
-            .publish/v04/fix07b.b64; do
-              echo "--- $f"
-              wc -c "$f"
-              sha256sum "$f"
-          done
-
           test "$(wc -c < .publish/v04/part00.b64)" -eq 10948
           test "$(wc -c < .publish/v04/part01.b64)" -eq 5474
           test "$(wc -c < .publish/v04/fix01b.b64)" -eq 5474
@@ -54,17 +35,17 @@ jobs:
           test "$(wc -c < .publish/v04/fix07a.b64)" -eq 5472
           test "$(wc -c < .publish/v04/fix07b.b64)" -eq 5472
 
-          echo 'a5e304d77995607b4ac363b40156c24948baf84aa33cb393d111ad5ee191b221  .publish/v04/part00.b64' | sha256sum -c -
+          echo '95fe64230db0430dfcc0c48439e2ad2256b832b34dd93b01522a1d43b486fd66  .publish/v04/part00.b64' | sha256sum -c -
           echo '15604fe951f59423b0c40c4189f9999b494a2756f92ed6c31a867b5f9e6be364  .publish/v04/part01.b64' | sha256sum -c -
           echo '566f41f99608dfbfbbb4cd78b6a692cf4d784f0b18a60fef99b16e41007b4409  .publish/v04/fix01b.b64' | sha256sum -c -
           echo '6d547d7811207a8cfea8fd9c4dd9626e588d59e9c0d3516533c69c4effb9cc06  .publish/v04/fix02a.b64' | sha256sum -c -
           echo '3a0026dc2528bd48ebd99fcea7df3ce9d77fbe4e1d90aa80c083e15011ec5479  .publish/v04/fix02b.b64' | sha256sum -c -
-          echo 'bce55914a6633f14f294fd8ad480e1ffc8b6b78765f83735eb1b01a642d1b24a  .publish/v04/part03.b64' | sha256sum -c -
+          echo '7bd9955fcbd766443f5c83eae8ce309f9743e7e7a9dd454c3d3847250cfbfe2c  .publish/v04/part03.b64' | sha256sum -c -
           echo 'cf6b911e0115fd5a5fd5f70e83e81dd3cd4e354386fc6c1fd63955765e19a785  .publish/v04/fix04a.b64' | sha256sum -c -
           echo '82fe77e1da5327e4b34b021e3ea7e990b3bd77dae9b0413a2c4aafd46fca4fe5  .publish/v04/fix04b.b64' | sha256sum -c -
           echo '5b44a7fefc738355fc53ec0e03b64f64ff31af6a349c8c0576a9c734108b6f14  .publish/v04/fix05a.b64' | sha256sum -c -
           echo '3a73518206a7114c166ea11c811f1c1a3386026798372ed4b357ef12f29a756f  .publish/v04/fix05b.b64' | sha256sum -c -
-          echo 'd1d247a90ae38722045524e70f54b2d9942474058ca31e867d451cbe42da2c31  .publish/v04/part06.b64' | sha256sum -c -
+          echo 'c14829f9828debc2d63857b3ed9de39091868769e805605837836b8c337b2c9e  .publish/v04/part06.b64' | sha256sum -c -
           echo '40c881845b0a1a087eab1ed4f1273c8df40284d61ea7a7707f7ef73a934bda5a  .publish/v04/fix07a.b64' | sha256sum -c -
           echo 'b18b5b2872fb208f2e22bb9cac4c5efbdbf0d35f6b0c628ccf5743d74c0664aa  .publish/v04/fix07b.b64' | sha256sum -c -
 
@@ -84,11 +65,8 @@ jobs:
               .publish/v04/part06.b64 \
               .publish/v04/fix07a.b64 \
               .publish/v04/fix07b.b64 > /tmp/BulentTV-v0.4.apk.b64
-          echo "Combined base64 chars: $(wc -c < /tmp/BulentTV-v0.4.apk.b64)"
           test "$(wc -c < /tmp/BulentTV-v0.4.apk.b64)" -eq 87580
           base64 --decode /tmp/BulentTV-v0.4.apk.b64 > BulentTV-0.4.apk
-          echo "APK bytes: $(stat -c%s BulentTV-0.4.apk)"
-          sha256sum BulentTV-0.4.apk
           test "$(stat -c%s BulentTV-0.4.apk)" -eq 65685
           echo 'c7c9f244c2fa26670601ee3d30b853e983ff50dfd45d56527a25cc62cdf9a812  BulentTV-0.4.apk' | sha256sum -c -
           cp BulentTV-0.4.apk BulentTV-latest.apk
