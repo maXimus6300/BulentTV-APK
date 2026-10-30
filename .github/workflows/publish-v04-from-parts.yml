@@ -18,6 +18,15 @@ jobs:
       - name: Checkout download repository
         uses: actions/checkout@v4
 
+      - name: Diagnose staged v0.4 parts
+        run: |
+          set -euo pipefail
+          for f in .publish/v04/part*.b64; do
+            echo "--- $f"
+            wc -c "$f"
+            sha256sum "$f"
+          done
+
       - name: Rebuild verified v0.4 APK
         run: |
           set -euo pipefail
