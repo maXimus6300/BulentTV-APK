@@ -43,42 +43,38 @@ jobs:
           echo 'd5c0a6605858f679bcc07283f55dd62757370207  .publish/v04safe/p18.b64' | sha1sum -c -
           echo '370bc2d3184ca6e67270d82546ab14a813600542  .publish/v04safe/p19.b64' | sha1sum -c -
           echo '2e2ab5265357d248c0e35c7825a34308dfab02a5  .publish/v04safe/p20.b64' | sha1sum -c -
-          echo '3ae3644d6777a1f56a1defeabc74af9c4b313e49  .publish/v04fix/p21_0.b64' | sha1sum -c -
-          echo '3ae3644d6777a1f56a1defeabc74af9c4b313e49  .publish/v04fix/p21_1.b64' | sha1sum -c -
-          echo '3ae3644d6777a1f56a1defeabc74af9c4b313e49  .publish/v04fix/p21_2.b64' | sha1sum -c -
           echo '81b8a14a7dd4e8aaa4aaed3b7b404fe10d503e3d  .publish/v04fix/p21_3.b64' | sha1sum -c -
 
       - name: Rebuild and verify v0.4 APK
         run: |
           set -euo pipefail
-          cat \
-            .publish/v04safe/p00.b64 \
-            .publish/v04safe/p01.b64 \
-            .publish/v04safe/prefix2.b64 \
-            .publish/v04new/p01.b64 \
-            .publish/v04new/p02.b64 \
-            .publish/v04new/p03.b64 \
-            .publish/v04new/p04.b64 \
-            .publish/v04safe/suffix0.b64 \
-            .publish/v04fix/p13_0.b64 \
-            .publish/v04fix/p13_1.b64 \
-            .publish/v04fix/p13_2.b64 \
-            .publish/v04fix/p13_3.b64 \
-            .publish/v04safe/p14.b64 \
-            .publish/v04safe/p15.b64 \
-            .publish/v04safe/p16.b64 \
-            .publish/v04fix/p17_0.b64 \
-            .publish/v04fix/p17_1.b64 \
-            .publish/v04fix/p17_2.b64 \
-            .publish/v04fix/p17_3.b64 \
-            .publish/v04safe/p18.b64 \
-            .publish/v04safe/p19.b64 \
-            .publish/v04safe/p20.b64 \
-            .publish/v04fix/p21_0.b64 \
-            .publish/v04fix/p21_1.b64 \
-            .publish/v04fix/p21_2.b64 \
-            .publish/v04fix/p21_3.b64 \
-            > /tmp/BulentTV-v0.4.apk.b64
+          {
+            cat \
+              .publish/v04safe/p00.b64 \
+              .publish/v04safe/p01.b64 \
+              .publish/v04safe/prefix2.b64 \
+              .publish/v04new/p01.b64 \
+              .publish/v04new/p02.b64 \
+              .publish/v04new/p03.b64 \
+              .publish/v04new/p04.b64 \
+              .publish/v04safe/suffix0.b64 \
+              .publish/v04fix/p13_0.b64 \
+              .publish/v04fix/p13_1.b64 \
+              .publish/v04fix/p13_2.b64 \
+              .publish/v04fix/p13_3.b64 \
+              .publish/v04safe/p14.b64 \
+              .publish/v04safe/p15.b64 \
+              .publish/v04safe/p16.b64 \
+              .publish/v04fix/p17_0.b64 \
+              .publish/v04fix/p17_1.b64 \
+              .publish/v04fix/p17_2.b64 \
+              .publish/v04fix/p17_3.b64 \
+              .publish/v04safe/p18.b64 \
+              .publish/v04safe/p19.b64 \
+              .publish/v04safe/p20.b64
+            head -c 3000 /dev/zero | tr '\0' 'A'
+            cat .publish/v04fix/p21_3.b64
+          } > /tmp/BulentTV-v0.4.apk.b64
           test "$(wc -c < /tmp/BulentTV-v0.4.apk.b64)" -eq 87580
           base64 --decode /tmp/BulentTV-v0.4.apk.b64 > BulentTV-0.4.apk
           test "$(stat -c%s BulentTV-0.4.apk)" -eq 65685
