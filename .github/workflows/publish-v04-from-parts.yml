@@ -23,8 +23,6 @@ jobs:
           set -euo pipefail
 
           # Compose the exact verified 87,580-character Base64 stream.
-          # The middle 40k block was already verified byte-for-byte; the
-          # prefix/suffix are staged in smaller safe chunks to avoid truncation.
           cat \
             .publish/v04safe/p00.b64 \
             .publish/v04safe/p01.b64 \
@@ -61,3 +59,5 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m 'Publish verified Bulent TV v0.4'
           git push
+
+# trigger: all safe v0.4 parts staged
