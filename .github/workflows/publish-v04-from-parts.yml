@@ -18,49 +18,7 @@ jobs:
       - name: Checkout download repository
         uses: actions/checkout@v4
 
-      - name: Diagnose staged v0.4 parts
-        run: |
-          set -u
-          {
-            echo "Bulent TV v0.4 staged-parts diagnostics"
-            date -u
-            echo
-            for f in \
-              .publish/v04safe/p00.b64 \
-              .publish/v04safe/p01.b64 \
-              .publish/v04safe/prefix2.b64 \
-              .publish/v04new/p01.b64 \
-              .publish/v04new/p02.b64 \
-              .publish/v04new/p03.b64 \
-              .publish/v04new/p04.b64 \
-              .publish/v04safe/suffix0.b64 \
-              .publish/v04safe/p13.b64 \
-              .publish/v04safe/p14.b64 \
-              .publish/v04safe/p15.b64 \
-              .publish/v04safe/p16.b64 \
-              .publish/v04safe/p17.b64 \
-              .publish/v04safe/p18.b64 \
-              .publish/v04safe/p19.b64 \
-              .publish/v04safe/p20.b64 \
-              .publish/v04safe/p21.b64; do
-                printf '%s | bytes=' "$f"
-                wc -c < "$f" | tr -d '\n'
-                printf ' | sha1='
-                sha1sum "$f" | awk '{print $1}'
-            done
-          } > v04-diagnostics.txt
-          cat v04-diagnostics.txt
-
-      - name: Commit diagnostics
-        run: |
-          set -euo pipefail
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git add v04-diagnostics.txt
-          git diff --cached --quiet || git commit -m 'Record v0.4 publish diagnostics'
-          git push
-
-      - name: Verify every staged part
+      - name: Verify staged v0.4 parts
         run: |
           set -euo pipefail
           echo 'cc12928156130c08cc74021bef89d5c7f3511fcd  .publish/v04safe/p00.b64' | sha1sum -c -
@@ -71,15 +29,24 @@ jobs:
           echo 'dd3ee5295ab27b08ccc0c559fe9fef46e4554c23  .publish/v04new/p03.b64' | sha1sum -c -
           echo '9691545ea62c401ff6eb342a4e3b2e3b0d91fa78  .publish/v04new/p04.b64' | sha1sum -c -
           echo '67f5569f6680a34d05817ffb8ec84c89d8f89405  .publish/v04safe/suffix0.b64' | sha1sum -c -
-          echo 'a0d56f84dcf54678a3074da69d13e4547fdff923  .publish/v04safe/p13.b64' | sha1sum -c -
+          echo 'be125dd63b28a8db04e4b48203e23c83c940fda1  .publish/v04fix/p13_0.b64' | sha1sum -c -
+          echo 'bba1b466fac509dfdf7db7eb44078bf4e8c93abe  .publish/v04fix/p13_1.b64' | sha1sum -c -
+          echo 'e0c01d81a65a88c77d13bce03d8e0d8f08bdc81d  .publish/v04fix/p13_2.b64' | sha1sum -c -
+          echo '48aa589c1cd2eeae27efbdfacc68905c57a24666  .publish/v04fix/p13_3.b64' | sha1sum -c -
           echo '06af8cd0da3ef40865825eef464b34b98d2bb4e9  .publish/v04safe/p14.b64' | sha1sum -c -
           echo 'a2091fed8575393e5227d6f4ecea3d79848436b1  .publish/v04safe/p15.b64' | sha1sum -c -
           echo '5acd8f68b3c803f55411610254af32c2800a9c00  .publish/v04safe/p16.b64' | sha1sum -c -
-          echo '594cb620ccaa3185808d51d23ec5a7a6d8a20be6  .publish/v04safe/p17.b64' | sha1sum -c -
+          echo 'f8fea8f3705181c351ec67518fb764012019e9ff  .publish/v04fix/p17_0.b64' | sha1sum -c -
+          echo 'baf22b584ead28776618359d13d4ad8d6a23d990  .publish/v04fix/p17_1.b64' | sha1sum -c -
+          echo '4393b2b466f61446f957bdab2b994eccdb51e7c2  .publish/v04fix/p17_2.b64' | sha1sum -c -
+          echo 'd4167b931c61c528bcb117345da2f34f76e3a370  .publish/v04fix/p17_3.b64' | sha1sum -c -
           echo 'd5c0a6605858f679bcc07283f55dd62757370207  .publish/v04safe/p18.b64' | sha1sum -c -
           echo '370bc2d3184ca6e67270d82546ab14a813600542  .publish/v04safe/p19.b64' | sha1sum -c -
           echo '2e2ab5265357d248c0e35c7825a34308dfab02a5  .publish/v04safe/p20.b64' | sha1sum -c -
-          echo 'f1d458e341414d2952f73607347fa88758002e48  .publish/v04safe/p21.b64' | sha1sum -c -
+          echo '3ae3644d6777a1f56a1defeabc74af9c4b313e49  .publish/v04fix/p21_0.b64' | sha1sum -c -
+          echo '3ae3644d6777a1f56a1defeabc74af9c4b313e49  .publish/v04fix/p21_1.b64' | sha1sum -c -
+          echo '3ae3644d6777a1f56a1defeabc74af9c4b313e49  .publish/v04fix/p21_2.b64' | sha1sum -c -
+          echo '81b8a14a7dd4e8aaa4aaed3b7b404fe10d503e3d  .publish/v04fix/p21_3.b64' | sha1sum -c -
 
       - name: Rebuild and verify v0.4 APK
         run: |
@@ -93,15 +60,24 @@ jobs:
             .publish/v04new/p03.b64 \
             .publish/v04new/p04.b64 \
             .publish/v04safe/suffix0.b64 \
-            .publish/v04safe/p13.b64 \
+            .publish/v04fix/p13_0.b64 \
+            .publish/v04fix/p13_1.b64 \
+            .publish/v04fix/p13_2.b64 \
+            .publish/v04fix/p13_3.b64 \
             .publish/v04safe/p14.b64 \
             .publish/v04safe/p15.b64 \
             .publish/v04safe/p16.b64 \
-            .publish/v04safe/p17.b64 \
+            .publish/v04fix/p17_0.b64 \
+            .publish/v04fix/p17_1.b64 \
+            .publish/v04fix/p17_2.b64 \
+            .publish/v04fix/p17_3.b64 \
             .publish/v04safe/p18.b64 \
             .publish/v04safe/p19.b64 \
             .publish/v04safe/p20.b64 \
-            .publish/v04safe/p21.b64 \
+            .publish/v04fix/p21_0.b64 \
+            .publish/v04fix/p21_1.b64 \
+            .publish/v04fix/p21_2.b64 \
+            .publish/v04fix/p21_3.b64 \
             > /tmp/BulentTV-v0.4.apk.b64
           test "$(wc -c < /tmp/BulentTV-v0.4.apk.b64)" -eq 87580
           base64 --decode /tmp/BulentTV-v0.4.apk.b64 > BulentTV-0.4.apk
@@ -110,9 +86,11 @@ jobs:
           unzip -t BulentTV-0.4.apk >/dev/null
           cp BulentTV-0.4.apk BulentTV-latest.apk
 
-      - name: Commit verified APKs
+      - name: Publish verified APKs
         run: |
           set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add BulentTV-0.4.apk BulentTV-latest.apk
           git diff --cached --quiet && exit 0
           git commit -m 'Publish verified Bulent TV v0.4'
