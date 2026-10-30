@@ -1,0 +1,45 @@
+name: Publish Bülent TV v0.5
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - '.github/workflows/publish-v05-from-parts.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout download repository
+        uses: actions/checkout@v4
+
+      - name: Rebuild and validate v0.5 APK
+        run: |
+          set -euo pipefail
+          mapfile -t PARTS < <(find .publish/v05 -maxdepth 1 -type f -name 'r*.b64' | sort -V)
+          test "${#PARTS[@]}" -ge 2
+          printf 'Using %s staged blocks\n' "${#PARTS[@]}"
+          cat "${PARTS[@]}" > /tmp/BulentTV-v0.5.apk.b64
+          base64 --decode /tmp/BulentTV-v0.5.apk.b64 > BulentTV-0.5.apk
+          test -s BulentTV-0.5.apk
+          unzip -t BulentTV-0.5.apk >/dev/null
+          unzip -l BulentTV-0.5.apk | grep -q 'AndroidManifest.xml'
+          unzip -l BulentTV-0.5.apk | grep -q 'classes'
+          cp BulentTV-0.5.apk BulentTV-latest.apk
+          sha256sum BulentTV-0.5.apk | tee BulentTV-0.5.sha256
+          stat -c 'APK size: %s bytes' BulentTV-0.5.apk
+
+      - name: Publish verified v0.5 APK
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add BulentTV-0.5.apk BulentTV-latest.apk BulentTV-0.5.sha256
+          git diff --cached --quiet && exit 0
+          git commit -m 'Publish verified Bülent TV v0.5'
+          git push
