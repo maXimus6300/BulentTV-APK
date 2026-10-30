@@ -21,6 +21,25 @@ jobs:
       - name: Verify repaired staged pieces
         run: |
           set -euo pipefail
+          for f in \
+            .publish/v04/part00.b64 \
+            .publish/v04/part01.b64 \
+            .publish/v04/fix01b.b64 \
+            .publish/v04/fix02a.b64 \
+            .publish/v04/fix02b.b64 \
+            .publish/v04/part03.b64 \
+            .publish/v04/fix04a.b64 \
+            .publish/v04/fix04b.b64 \
+            .publish/v04/fix05a.b64 \
+            .publish/v04/fix05b.b64 \
+            .publish/v04/part06.b64 \
+            .publish/v04/fix07a.b64 \
+            .publish/v04/fix07b.b64; do
+              echo "--- $f"
+              wc -c "$f"
+              sha256sum "$f"
+          done
+
           test "$(wc -c < .publish/v04/part00.b64)" -eq 10948
           test "$(wc -c < .publish/v04/part01.b64)" -eq 5474
           test "$(wc -c < .publish/v04/fix01b.b64)" -eq 5474
@@ -65,9 +84,11 @@ jobs:
               .publish/v04/part06.b64 \
               .publish/v04/fix07a.b64 \
               .publish/v04/fix07b.b64 > /tmp/BulentTV-v0.4.apk.b64
-
+          echo "Combined base64 chars: $(wc -c < /tmp/BulentTV-v0.4.apk.b64)"
           test "$(wc -c < /tmp/BulentTV-v0.4.apk.b64)" -eq 87580
           base64 --decode /tmp/BulentTV-v0.4.apk.b64 > BulentTV-0.4.apk
+          echo "APK bytes: $(stat -c%s BulentTV-0.4.apk)"
+          sha256sum BulentTV-0.4.apk
           test "$(stat -c%s BulentTV-0.4.apk)" -eq 65685
           echo 'c7c9f244c2fa26670601ee3d30b853e983ff50dfd45d56527a25cc62cdf9a812  BulentTV-0.4.apk' | sha256sum -c -
           cp BulentTV-0.4.apk BulentTV-latest.apk
@@ -81,5 +102,3 @@ jobs:
           git diff --cached --quiet && exit 0
           git commit -m 'Publish Bulent TV v0.4'
           git push
-
-# rerun after all repaired pieces are present
