@@ -1,0 +1,48 @@
+name: Publish verified Bülent TV v0.6 final
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-v06-final.yml'
+      - '.publish/v06/**'
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct and verify v0.6
+        run: |
+          set -euo pipefail
+          {
+            cat .publish/v06/p00
+            cat .publish/v06/p01s/s* 2>/dev/null || cat .publish/v06/p01
+            cat .publish/v06/p02
+            cat .publish/v06/p03s/s* 2>/dev/null || cat .publish/v06/p03
+          } > /tmp/v06.b64
+          tr -d '\r\n ' < /tmp/v06.b64 > /tmp/v06.clean.b64
+          base64 --decode /tmp/v06.clean.b64 > /tmp/v06.zip
+          rm -rf /tmp/v06 && mkdir -p /tmp/v06
+          unzip -q /tmp/v06.zip -d /tmp/v06
+          APK=$(find /tmp/v06 -type f -name '*.apk' | head -n 1)
+          test -n "$APK"
+          test "$(stat -c%s "$APK")" = "113133"
+          echo 'dc0cc2d31073228adeea20c52e4a430b250722bbe549c956405d70aed43c95eb  '"$APK" | sha256sum -c -
+          unzip -t "$APK" >/dev/null
+          cp "$APK" BulentTV-0.6.apk
+          cp "$APK" BulentTV-latest.apk
+
+      - name: Publish APK files
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add BulentTV-0.6.apk BulentTV-latest.apk
+          git commit -m 'Publish verified Bülent TV v0.6' || exit 0
+          git push
