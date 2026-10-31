@@ -1,0 +1,1 @@
+Temporary verified binary chunks for Bulent TV v0.6. Reconstructed and hash-checked by GitHub Actions before publication.
