@@ -1,0 +1,1 @@
+v0.6 direct binary publish path initialized
