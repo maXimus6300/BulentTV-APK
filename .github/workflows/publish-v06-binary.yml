@@ -1,0 +1,37 @@
+name: Publish verified Bulent TV v0.6 binary
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.publish/v06bin/**'
+      - '.github/workflows/publish-v06-binary.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Reconstruct and verify APK
+        run: |
+          set -euo pipefail
+          cat .publish/v06bin/c00 .publish/v06bin/c01 .publish/v06bin/c02 .publish/v06bin/c03 .publish/v06bin/c04 .publish/v06bin/c05 .publish/v06bin/c06 .publish/v06bin/c07 .publish/v06bin/c08 .publish/v06bin/c09 > /tmp/BulentTV-0.6.apk
+          test "$(stat -c%s /tmp/BulentTV-0.6.apk)" = "113133"
+          echo 'dc0cc2d31073228adeea20c52e4a430b250722bbe549c956405d70aed43c95eb  /tmp/BulentTV-0.6.apk' | sha256sum -c -
+          unzip -t /tmp/BulentTV-0.6.apk >/dev/null
+          cp /tmp/BulentTV-0.6.apk BulentTV-0.6.apk
+          cp /tmp/BulentTV-0.6.apk BulentTV-latest.apk
+
+      - name: Publish APKs
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add BulentTV-0.6.apk BulentTV-latest.apk
+          git commit -m 'Publish update-safe Bulent TV v0.6' || exit 0
+          git push
