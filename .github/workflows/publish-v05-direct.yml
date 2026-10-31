@@ -1,0 +1,39 @@
+name: Publish verified Bülent TV v0.5
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/publish-v05-direct.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Download already verified v0.5 build
+        run: |
+          set -euo pipefail
+          curl -fL 'https://sdmntprdenmarkeast.oaiusercontent.com/files/00000000-3b24-8210-baf7-71e6e18b5538/raw?se=2026-10-31T00%3A54%3A31Z&sp=r&sv=2026-02-06&sr=b&scid=8d500f42-f498-5ff0-8bc0-d6c0954204b1&skoid=40ce4b34-a373-4a62-b0bf-44befe221915&sktid=a48cca56-e6da-484e-a814-9c849652bcb3&skt=2026-10-30T22%3A11%3A18Z&ske=2026-10-31T22%3A11%3A18Z&sks=b&skv=2026-02-06&sig=MHZUqC6glypyz5bvQGP%2BvGJ3byIcLNC07batmsa%2BuOQ%3D' -o /tmp/v05.zip
+          rm -rf /tmp/v05 && mkdir -p /tmp/v05
+          unzip -q /tmp/v05.zip -d /tmp/v05
+          APK=$(find /tmp/v05 -type f -name '*.apk' | head -n 1)
+          test -n "$APK"
+          echo '1ba13c0a960b753b9777f0a6749809adf63b9a400173ac1e511411a8573324e1  '"$APK" | sha256sum -c -
+          unzip -t "$APK" >/dev/null
+          cp "$APK" BulentTV-0.5.apk
+          cp "$APK" BulentTV-latest.apk
+
+      - name: Publish versioned APK and latest alias
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add BulentTV-0.5.apk BulentTV-latest.apk
+          git commit -m 'Publish update-safe Bulent TV v0.5' || exit 0
+          git push
