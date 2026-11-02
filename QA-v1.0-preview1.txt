@@ -1,0 +1,11 @@
+Bülent TV v1.0-preview1
+package=de.bulenttv.app
+versionCode=11
+versionName=1.0-preview1
+size=64097
+sha256=60e73be10eebd8b94918d514fe6fa2f6aa2156b17d1f91ca66b3e4ee5b67c9d1
+signing_cert_sha256=30fe0e41131be1b8024c254ccaa8fd534d149cefca075f55ae11e98333874df6
+premium_ui_scope=PASS
+apk_zip_integrity=PASS
+signature_verify=PASS
+fire_tv_runtime_test=PENDING_DEVICE_TEST
