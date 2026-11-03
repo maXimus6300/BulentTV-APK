@@ -1,0 +1,9 @@
+Bülent TV Clean Home Light rebuild
+package=de.bulenttv.app
+versionCode=100
+versionName=1.0-clean-home-light
+sha256=27f167ce7dd408f58d14442bb8d3c635624eb9789a7b6fe86e02ec38ddfc07ad
+signing_cert_sha256=30fe0e41131be1b8024c254ccaa8fd534d149cefca075f55ae11e98333874df6
+legacy_canvas_ui=NOT_USED
+clean_home_only=PASS
+fire_tv_runtime_test=PENDING_DEVICE_TEST
