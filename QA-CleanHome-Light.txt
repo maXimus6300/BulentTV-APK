@@ -1,9 +1,11 @@
-Bülent TV Clean Home Light rebuild
+Bülent TV Clean Home Light pixel-master acceptance build
 package=de.bulenttv.app
-versionCode=100
-versionName=1.0-clean-home-light
-sha256=27f167ce7dd408f58d14442bb8d3c635624eb9789a7b6fe86e02ec38ddfc07ad
+versionCode=101
+versionName=1.0-clean-home-light-pixel1
+sha256=e784e729cfd1898eabbcaaa1dbe8bf0082c0459ed6ba9ee6d3ba831b0e7f5474
 signing_cert_sha256=30fe0e41131be1b8024c254ccaa8fd534d149cefca075f55ae11e98333874df6
 legacy_canvas_ui=NOT_USED
+approved_concept_master=EMBEDDED_LOCAL
+external_background=NOT_USED
 clean_home_only=PASS
 fire_tv_runtime_test=PENDING_DEVICE_TEST
